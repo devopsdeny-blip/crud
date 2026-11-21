@@ -1,0 +1,118 @@
+{
+  "summary": "This breakdown details the tickets required to implement the minimal Notes CRUD MVP using Python FastAPI, SQLite, and a vanilla JavaScript frontend. It covers specification design for UI/UX and Backend, backend implementation with pytest tests, frontend single-page UI implementation, and full QA verification.",
+  "tickets": [
+    {
+      "ticket_code": "TKT-UX-001",
+      "title": "Design single-page Web UI for Notes app",
+      "description": "Create design spec detailing HTML/CSS layout, wireframes, component states (loading, empty, error), form controls, and delete confirmation modal/flow.",
+      "kind": "SPEC",
+      "assignee_role": "UI_UX",
+      "acceptance_criteria": [
+        "Design spec defines layout for single page index.html with vanilla JS (no framework or build step).",
+        "Includes state specs for note list, search input with title filtering, create/edit form, and delete button with confirmation dialog.",
+        "Defines UI representation for loading, empty ('No notes yet'), and error states."
+      ],
+      "depends_on": [],
+      "prd_section_refs": [
+        "Web UI"
+      ]
+    },
+    {
+      "ticket_code": "TKT-BE-001",
+      "title": "Define OpenAPI spec and database schema for Notes API",
+      "description": "Write OpenAPI spec and SQLite/SQLAlchemy schema specification for Notes CRUD operations and validation rules.",
+      "kind": "SPEC",
+      "assignee_role": "BACKEND",
+      "acceptance_criteria": [
+        "OpenAPI schema defines endpoints POST /notes, GET /notes (with ?q= query filter), GET /notes/{id}, PUT /notes/{id}, DELETE /notes/{id}.",
+        "DB schema defines Note entity: id (auto-increment int), title (1-120 chars), content (optional, max 5000 chars), created_at and updated_at (ISO-8601).",
+        "Specifies response schemas, HTTP status codes (200, 201, 204, 404, 422), and validation error responses."
+      ],
+      "depends_on": [],
+      "prd_section_refs": [
+        "Data model",
+        "API"
+      ]
+    },
+    {
+      "ticket_code": "TKT-BE-002",
+      "title": "Implement FastAPI backend and SQLite database for Notes CRUD",
+      "description": "Build FastAPI application, SQLAlchemy models, database setup, and API routes per the OpenAPI and DB specs.",
+      "kind": "IMPLEMENTATION",
+      "assignee_role": "BACKEND",
+      "acceptance_criteria": [
+        "FastAPI app serves POST /notes, GET /notes (sorted newest first, with case-insensitive ?q= title filter), GET /notes/{id}, PUT /notes/{id}, and DELETE /notes/{id}.",
+        "Data persistence uses SQLite via SQLAlchemy with specified field constraints (title 1-120 chars, content max 5000 chars).",
+        "Returns 404 for non-existent notes on GET, PUT, DELETE, and 422 for validation errors.",
+        "Includes pytest test suite covering all endpoints, 404 scenarios, title search, and validation error cases."
+      ],
+      "depends_on": [
+        "TKT-BE-001"
+      ],
+      "prd_section_refs": [
+        "Data model",
+        "API",
+        "Quality"
+      ]
+    },
+    {
+      "ticket_code": "TKT-FE-001",
+      "title": "Implement single-page web UI with vanilla JS",
+      "description": "Develop index.html and vanilla JavaScript logic to interface with the Notes API for search, list display, creation, editing, and deletion.",
+      "kind": "IMPLEMENTATION",
+      "assignee_role": "FRONTEND",
+      "acceptance_criteria": [
+        "index.html and vanilla JS implement list view with search box filtering notes by title.",
+        "Form enables creating new notes and editing existing notes.",
+        "Delete action triggers confirmation before calling DELETE endpoint.",
+        "UI handles and displays loading indicator, empty state ('No notes yet'), and error messages appropriately.",
+        "No frontend frameworks or build tools are used."
+      ],
+      "depends_on": [
+        "TKT-UX-001",
+        "TKT-BE-001"
+      ],
+      "prd_section_refs": [
+        "Web UI"
+      ]
+    },
+    {
+      "ticket_code": "TKT-QA-001",
+      "title": "QA verification of Backend Notes API and pytest suite",
+      "description": "Verify all FastAPI REST endpoints, status codes, query filtering, database constraints, validation errors, and execute pytest suite.",
+      "kind": "QA",
+      "assignee_role": "QA",
+      "acceptance_criteria": [
+        "All API endpoints pass functional verification: POST (201), GET list (200), GET single (200/404), PUT (200/404), DELETE (204/404).",
+        "Case-insensitive title search ?q= returns correct filtered list sorted newest first.",
+        "Validation constraints (title 1-120 chars, content max 5000 chars) return 422.",
+        "Pytest test suite executes cleanly with 100% endpoint coverage."
+      ],
+      "depends_on": [
+        "TKT-BE-002"
+      ],
+      "prd_section_refs": [
+        "API",
+        "Quality"
+      ]
+    },
+    {
+      "ticket_code": "TKT-QA-002",
+      "title": "QA verification of Frontend UI and End-to-End Notes workflows",
+      "description": "Test single-page UI interaction with API, search box behavior, create/edit/delete flows, delete confirmation dialog, loading, empty, and error states.",
+      "kind": "QA",
+      "assignee_role": "QA",
+      "acceptance_criteria": [
+        "Verified search box filters notes dynamically or on submission.",
+        "Verified create note, edit note, and delete note (with confirmation dialog) update state correctly in UI and database.",
+        "Verified empty state ('No notes yet'), loading state, and backend error states render properly."
+      ],
+      "depends_on": [
+        "TKT-FE-001"
+      ],
+      "prd_section_refs": [
+        "Web UI"
+      ]
+    }
+  ]
+}
