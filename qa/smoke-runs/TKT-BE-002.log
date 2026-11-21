@@ -1,0 +1,19 @@
+# App smoke run for TKT-BE-002 by BACKEND
+passed: false
+server_started: true
+entrypoint: src.main:app (asgi), ui_mode: served_by_app, ui_path: /
+summary: 2 problem(s)
+duration_ms: 17814
+---
+## Problems
+- check failed: POST /notes -> 200 (got 422; body: {"detail":[{"type":"missing","loc":["body"],"msg":"Field required","input":null}]})
+- check failed: GET /notes/1 -> 200 (got 404; body: {"detail":"Note not found"})
+
+## API checks
+- [ ] POST /notes -> 200: got 422; body: {"detail":[{"type":"missing","loc":["body"],"msg":"Field required","input":null}]}
+- [x] GET /notes -> 200: got 200
+- [ ] GET /notes/1 -> 200: got 404; body: {"detail":"Note not found"}
+
+## Browser
+- url: http://localhost:8000/ (HTTP 200, loaded=True, title='Notes App')
+- text: 'Notes App\n+ New Note\n📝\nNo notes yet\n\nCreate your first note to get started\n\n+ Create Note\nNew Note\nTitle\n0 / 120\nContent\n0 / 5000\nCancel\nSave Note'
