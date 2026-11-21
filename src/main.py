@@ -44,8 +44,8 @@ def delete_note(id: int, db: Session = Depends(get_db)):
 # Serve Static Files
 @app.get("/")
 async def read_index():
-    return FileResponse("index.html")
+    return FileResponse("static/index.html")
 
-# Mount static files (styles.css, app.js)
-# Note: This should be after API routes to avoid shadowing them if using "/"
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
+# Mount static files (styles.css, app.js) from dedicated 'static' directory
+# This prevents exposing source code and database files.
+app.mount("/", StaticFiles(directory="static"), name="static")
