@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="notes-app">
+        <header id="app-header" class="app-header">
+            <div class="header-content">
+                <h1 class="app-title">Notes App</h1>
+                <div class="header-actions">
+                    <button id="new-note-btn-header" class="btn btn-primary">+ New Note</button>
+                    <div id="status-indicator" class="status-indicator"></div>
+                </div>
+            </div>
+        </header>
+
+        <div id="error-banner" class="error-banner hidden">
+            <div class="error-content">
+                <span class="error-icon">⚠️</span>
+                <span id="error-message" class="error-message"></span>
+                <button id="retry-btn" class="btn btn-sm btn-outline">Retry</button>
+            </div>
+            <button id="close-error-btn" class="close-btn">&times;</button>
+        </div>
+
+        <main id="app-main" class="app-main">
+            <aside id="sidebar" class="sidebar">
+                <div class="search-box-container">
+                    <input type="search" id="search-input" placeholder="Search notes by title..." autocomplete="off">
+                </div>
+                
+                <div id="loading-indicator" class="loading-indicator hidden">
+                    <div class="spinner"></div>
+                    <span>Loading notes...</span>
+                </div>
+
+                <div id="empty-state" class="empty-state hidden">
+                    <div id="empty-icon" class="empty-icon">📝</div>
+                    <h3 id="empty-state-title">No notes yet</h3>
+                    <p id="empty-state-desc">Create your first note to get started</p>
+                    <div class="empty-state-actions">
+                        <button id="create-first-note-btn" class="btn btn-primary">+ Create Note</button>
+                        <button id="clear-search-btn" class="btn btn-secondary hidden">Clear Search</button>
+                    </div>
+                </div>
+
+                <div id="notes-list" class="notes-list">
+                    <!-- Note items will be rendered here -->
+                </div>
+            </aside>
+
+            <section id="editor-pane" class="editor-pane">
+                <form id="note-editor-form" class="note-editor-form" novalidate>
+                    <input type="hidden" id="note-id">
+                    
+                    <header class="editor-header">
+                        <h2 id="form-title">New Note</h2>
+                        <div class="editor-actions">
+                            <button type="button" id="delete-note-btn" class="btn btn-danger-outline hidden">Delete</button>
+                        </div>
+                    </header>
+
+                    <div class="form-group">
+                        <label for="note-title-input">Title</label>
+                        <input type="text" id="note-title-input" placeholder="Title (required, 1-120 chars)" required maxlength="120">
+                        <div id="title-char-counter" class="char-counter">0 / 120</div>
+                        <div id="title-error" class="field-error hidden">Title is required and must be between 1 and 120 characters.</div>
+                    </div>
+
+                    <div class="form-group flex-grow">
+                        <label for="note-content-input">Content</label>
+                        <textarea id="note-content-input" placeholder="Write your note content here..." maxlength="5000"></textarea>
+                        <div id="content-char-counter" class="char-counter">0 / 5000</div>
+                        <div id="content-error" class="field-error hidden">Content must not exceed 5000 characters.</div>
+                    </div>
+
+                    <div class="form-footer">
+                        <div id="timestamp-info" class="timestamp-info hidden">
+                            <span id="created-at-display"></span>
+                            <span id="updated-at-display"></span>
+                        </div>
+                        <div class="footer-buttons">
+                            <button type="button" id="cancel-note-btn" class="btn btn-ghost">Cancel</button>
+                            <button type="submit" id="save-note-btn" class="btn btn-accent">Save Note</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <div id="delete-confirm-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <header class="modal-header">
+                    <h3>Delete Note?</h3>
+                </header>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete "<span id="delete-note-title-display" class="highlight"></span>"? This action cannot be undone.</p>
+                </div>
+                <footer class="modal-footer">
+                    <button id="cancel-delete-btn" class="btn btn-secondary">Cancel</button>
+                    <button id="confirm-delete-btn" class="btn btn-danger">Delete Note</button>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# App smoke run for TKT-FE-001 by FRONTEND
+passed: true
+server_started: true
+entrypoint: src.main:app (asgi), ui_mode: served_by_app, ui_path: /
+summary: smoke passed: UI loaded (Notes App), 2 API check(s) ok
+duration_ms: 5592
+---
+## Problems
+- none
+
+## API checks
+- [x] GET / -> 200: got 200
+- [x] GET /notes -> 200: got 200
+
+## Browser
+- url: http://localhost:8000/ (HTTP 200, loaded=True, title='Notes App')
+- text: 'Notes App\n+ New Note\n📝\nNo notes yet\n\nCreate your first note to get started\n\n+ Create Note\nNew Note\nTitle\n0 / 120\nContent\n0 / 5000\nCancel\nSave Note'
