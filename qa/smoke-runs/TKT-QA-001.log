@@ -1,24 +1,17 @@
 # App smoke run for TKT-QA-001 by QA
-passed: false
+passed: true
 server_started: true
 entrypoint: src.main:app (asgi), ui_mode: served_by_app, ui_path: /
-summary: 3 problem(s)
-duration_ms: 14134
+summary: smoke passed: UI loaded (Notes App), 2 API check(s) ok
+duration_ms: 8987
 ---
 ## Problems
-- UI page http://localhost:8000/ did not load (HTTP 404)
-- browser error: Failed to load resource: the server responded with a status of 404 (Not Found)
-- request failed: GET http://localhost:8000/ -> HTTP 404
-
-## Hints
-- The app does not serve the UI at /. If the backend should serve the frontend, mount the static files (FastAPI: StaticFiles / FileResponse for index.html; Flask: send_from_directory). If the UI is deployed separately, re-run with ui_mode='static' and enable CORS.
+- none
 
 ## API checks
 - [x] GET /docs -> 200: got 200
 - [x] GET /notes -> 200: got 200
 
 ## Browser
-- url: http://localhost:8000/ (HTTP 404, loaded=False, title='')
-- console error: Failed to load resource: the server responded with a status of 404 (Not Found)
-- failed request: GET http://localhost:8000/ -> HTTP 404
-- text: '{"detail":"Not Found"}'
+- url: http://localhost:8000/ (HTTP 200, loaded=True, title='Notes App')
+- text: 'Notes App\n+ New Note\n📝\nNo notes yet\n\nCreate your first note to get started\n\n+ Create Note\nNew Note\nTitle\n0 / 120\nContent\n0 / 5000\nCancel\nSave Note'
