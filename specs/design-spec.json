@@ -1,0 +1,354 @@
+{
+  "x-contract": {
+    "provides": [
+      "notes_list_view",
+      "search_input",
+      "note_editor_form",
+      "delete_modal",
+      "loading_indicator",
+      "empty_state_view",
+      "error_banner"
+    ],
+    "requires": [
+      "id",
+      "title",
+      "content",
+      "created_at",
+      "updated_at",
+      "q"
+    ]
+  },
+  "title": "Notes App - Web UI Design Specification",
+  "version": "1.0.0",
+  "meta": {
+    "framework": "Vanilla HTML5 / CSS3 / JavaScript (No framework or build step)",
+    "responsive_strategy": "Desktop-first Dual-Pane Split View with collapsible single-column layout on mobile (<768px)",
+    "theme": "Modern Slate"
+  },
+  "design_tokens": {
+    "color": {
+      "bg_app": "#0f172a",
+      "bg_panel": "#1e293b",
+      "bg_surface": "#334155",
+      "bg_surface_hover": "#475569",
+      "bg_surface_active": "#0284c7",
+      "border": "#334155",
+      "border_focus": "#38bdf8",
+      "text_primary": "#f8fafc",
+      "text_secondary": "#94a3b8",
+      "text_muted": "#64748b",
+      "accent_primary": "#0284c7",
+      "accent_primary_hover": "#0369a1",
+      "danger": "#ef4444",
+      "danger_hover": "#dc2626",
+      "danger_bg": "rgba(239, 68, 68, 0.1)",
+      "warning_bg": "rgba(245, 158, 11, 0.1)",
+      "warning_text": "#fbbf24",
+      "success": "#10b981",
+      "modal_overlay": "rgba(15, 23, 42, 0.75)"
+    },
+    "typography": {
+      "font_family_sans": "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
+      "font_family_mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+      "font_size_xs": "0.75rem",
+      "font_size_sm": "0.875rem",
+      "font_size_base": "1rem",
+      "font_size_lg": "1.125rem",
+      "font_size_xl": "1.25rem",
+      "font_size_2xl": "1.5rem",
+      "font_weight_regular": 400,
+      "font_weight_medium": 500,
+      "font_weight_semibold": 600,
+      "font_weight_bold": 700
+    },
+    "spacing": {
+      "space_1": "0.25rem",
+      "space_2": "0.5rem",
+      "space_3": "0.75rem",
+      "space_4": "1rem",
+      "space_6": "1.5rem",
+      "space_8": "2rem"
+    },
+    "border_radius": {
+      "sm": "0.25rem",
+      "md": "0.375rem",
+      "lg": "0.5rem",
+      "xl": "0.75rem",
+      "full": "9999px"
+    },
+    "shadows": {
+      "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.2)",
+      "md": "0 4px 6px -1px rgba(0, 0, 0, 0.3)",
+      "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.4)",
+      "modal": "0 20px 25px -5px rgba(0, 0, 0, 0.5)"
+    },
+    "z_index": {
+      "base": 1,
+      "dropdown": 100,
+      "sticky": 200,
+      "modal_backdrop": 1000,
+      "modal": 1050,
+      "toast": 1100
+    }
+  },
+  "layout_grid": {
+    "structure": "Header top bar (56px fixed height), main container flex row occupying 100vh - 56px.",
+    "left_pane": {
+      "name": "Sidebar (Note List & Search)",
+      "width_desktop": "360px fixed (min-width: 300px, max-width: 420px)",
+      "width_mobile": "100% full width when active pane"
+    },
+    "right_pane": {
+      "name": "Main Editor View (Create/Edit Form)",
+      "width_desktop": "flex 1 (fills remaining width)",
+      "width_mobile": "100% full width when active pane"
+    },
+    "responsive_breakpoint": "768px"
+  },
+  "html_structure": {
+    "root": "div#app.notes-app",
+    "children": [
+      {
+        "tag": "header",
+        "id": "app-header",
+        "class": "app-header",
+        "content": "Logo/Title 'Notes App', 'New Note' primary button, status indicator"
+      },
+      {
+        "tag": "div",
+        "id": "error-banner",
+        "class": "error-banner hidden",
+        "content": "Alert icon, message container, retry button, close button"
+      },
+      {
+        "tag": "main",
+        "id": "app-main",
+        "class": "app-main",
+        "children": [
+          {
+            "tag": "aside",
+            "id": "sidebar",
+            "class": "sidebar",
+            "children": [
+              {
+                "tag": "div",
+                "class": "search-box-container",
+                "content": "input#search-input[type=search][placeholder='Search notes by title...']"
+              },
+              {
+                "tag": "div",
+                "id": "loading-indicator",
+                "class": "loading-indicator hidden",
+                "content": "Spinner icon + 'Loading notes...'"
+              },
+              {
+                "tag": "div",
+                "id": "empty-state",
+                "class": "empty-state hidden",
+                "content": "Empty icon, title 'No notes yet', description, '+ Create Note' button"
+              },
+              {
+                "tag": "div",
+                "id": "notes-list",
+                "class": "notes-list",
+                "content": "Scrollable list of div.note-item cards"
+              }
+            ]
+          },
+          {
+            "tag": "section",
+            "id": "editor-pane",
+            "class": "editor-pane",
+            "children": [
+              {
+                "tag": "form",
+                "id": "note-editor-form",
+                "class": "note-editor-form",
+                "children": [
+                  "input#note-id[type=hidden]",
+                  "header.editor-header: h2#form-title + action-buttons (Save, Cancel, Delete)",
+                  "div.form-group: label + input#note-title-input[maxlength=120] + div.char-counter",
+                  "div.form-group: label + textarea#note-content-input[maxlength=5000] + div.char-counter",
+                  "div.form-footer: timestamp-info (created_at/updated_at) + btn#save-note-btn + btn#cancel-note-btn"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tag": "div",
+        "id": "delete-confirm-modal",
+        "class": "modal-overlay hidden",
+        "children": [
+          {
+            "tag": "div",
+            "class": "modal-card",
+            "children": [
+              "header.modal-header: title 'Delete Note?'",
+              "body.modal-body: confirmation text including note title highlighted",
+              "footer.modal-footer: btn#confirm-delete-btn (destructive) + btn#cancel-delete-btn (secondary)"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "component_specs": {
+    "search_input": {
+      "element_id": "search-input",
+      "type": "input[type='search']",
+      "placeholder": "Search notes by title...",
+      "interaction": {
+        "debounce_ms": 250,
+        "on_input": "Triggers filtered GET /notes?q={value} call or local filter refresh.",
+        "clear_button": "Native search clear button or inline icon clears input and resets list."
+      },
+      "states": {
+        "default": "Dark slate background, muted placeholder text, subtle border.",
+        "focus": "Border changes to #38bdf8 with subtle blue glow shadow.",
+        "active_filter": "Includes clear icon (x) on right when input is non-empty."
+      }
+    },
+    "note_list_item": {
+      "element_class": "note-item",
+      "attributes": {
+        "data-id": "{note.id}"
+      },
+      "sub_elements": {
+        "title": "h3.note-item-title - Truncated with ellipsis if line-clamp: 1 exceeds width.",
+        "preview": "p.note-item-preview - First line of content truncated (line-clamp: 2).",
+        "timestamp": "span.note-item-time - Relative time (e.g., '2 mins ago', 'Yesterday') or formatted date."
+      },
+      "states": {
+        "idle": "Background #1e293b, text #f8fafc, border-bottom #334155.",
+        "hover": "Background #334155, cursor pointer.",
+        "selected": "Background #0284c7 with border-left 4px solid #38bdf8.",
+        "empty_search_result": "If q filter returns 0 items, display 'No matching notes found' inside sidebar."
+      }
+    },
+    "note_editor_form": {
+      "element_id": "note-editor-form",
+      "fields": {
+        "id": {
+          "element_id": "note-id",
+          "type": "hidden"
+        },
+        "title": {
+          "element_id": "note-title-input",
+          "type": "text",
+          "required": true,
+          "maxlength": 120,
+          "placeholder": "Title (required, 1-120 chars)",
+          "counter_id": "title-char-counter",
+          "validation": {
+            "min_length": 1,
+            "max_length": 120,
+            "error_message": "Title is required and must be between 1 and 120 characters."
+          }
+        },
+        "content": {
+          "element_id": "note-content-input",
+          "type": "textarea",
+          "required": false,
+          "maxlength": 5000,
+          "placeholder": "Write your note content here...",
+          "counter_id": "content-char-counter",
+          "validation": {
+            "max_length": 5000,
+            "error_message": "Content must not exceed 5000 characters."
+          }
+        }
+      },
+      "buttons": {
+        "new_note_btn": {
+          "id": "new-note-btn",
+          "text": "+ New Note",
+          "style": "Primary Blue Button",
+          "action": "Clears form inputs, resets note-id, focuses note-title-input."
+        },
+        "save_btn": {
+          "id": "save-note-btn",
+          "text": "Save Note",
+          "style": "Primary Accent Button (#0284c7)",
+          "disabled_state": "Disabled when form is pristine or submitting."
+        },
+        "cancel_btn": {
+          "id": "cancel-note-btn",
+          "text": "Cancel",
+          "style": "Secondary Ghost Button",
+          "action": "Resets form to currently selected note or default blank state."
+        },
+        "delete_btn": {
+          "id": "delete-note-btn",
+          "text": "Delete",
+          "style": "Danger Button Outline (#ef4444)",
+          "visibility": "Hidden when creating a new unsaved note; Visible when editing an existing note."
+        }
+      }
+    },
+    "delete_confirmation_modal": {
+      "element_id": "delete-confirm-modal",
+      "type": "Modal Dialog with Backdrop",
+      "elements": {
+        "title": "Delete Note",
+        "message": "Are you sure you want to delete \"{note_title}\"? This action cannot be undone.",
+        "confirm_btn": {
+          "id": "confirm-delete-btn",
+          "text": "Delete Note",
+          "style": "Solid Red (#ef4444)"
+        },
+        "cancel_btn": {
+          "id": "cancel-delete-btn",
+          "text": "Cancel",
+          "style": "Secondary Button (#334155)"
+        }
+      },
+      "interaction": {
+        "open": "Triggered by clicking #delete-note-btn.",
+        "dismiss_triggers": ["Clicking #cancel-delete-btn", "Clicking backdrop overlay", "Pressing Escape key"],
+        "confirm_action": "Disables buttons, shows inline spinner, sends DELETE /notes/{id}, closes modal on 204 response, updates note list."
+      }
+    }
+  },
+  "states_specification": {
+    "loading_state": {
+      "trigger": "Initial page load or fetching notes list.",
+      "ui_presentation": {
+        "sidebar": "Hide note list; show #loading-indicator with CSS keyframe animated spinner icon and text 'Loading notes...'.",
+        "editor": "Inputs disabled with subtle pulse opacity or placeholder loading state."
+      }
+    },
+    "empty_state": {
+      "trigger": "GET /notes returns an empty array [].",
+      "ui_presentation": {
+        "sidebar": "Hide note list and spinner; show #empty-state container with document icon, headline 'No notes yet', subtext 'Create your first note to get started', and a prominent '+ Create Note' button.",
+        "editor": "Displays clear form ready for creating the first note."
+      }
+    },
+    "empty_search_state": {
+      "trigger": "GET /notes?q={query} returns [].",
+      "ui_presentation": {
+        "sidebar": "Show #empty-state container with search icon, headline 'No matching notes', subtext 'No notes found matching \"{query}\"', and a button to 'Clear Search'.",
+        "editor": "Unchanged."
+      }
+    },
+    "error_state": {
+      "trigger": "API request failure (e.g. Network offline, 500 server error, 404 not found, 422 validation error).",
+      "ui_presentation": {
+        "banner": "Show #error-banner at top of screen with alert icon, error message, 'Retry' button, and dismiss 'x' button.",
+        "form_inline_errors": {
+          "title_overflow": "If title > 120 chars, add .is-invalid class to input, show text 'Title cannot exceed 120 characters' below field in red (#ef4444).",
+          "content_overflow": "If content > 5000 chars, add .is-invalid class to textarea, show text 'Content cannot exceed 5000 characters' below field in red (#ef4444)."
+        }
+      }
+    },
+    "happy_path_state": {
+      "trigger": "GET /notes returns 1 or more notes.",
+      "ui_presentation": {
+        "sidebar": "Render notes list sorted newest first (by updated_at/created_at). Highlight active note card.",
+        "editor": "Display details of currently selected note or new note form."
+      }
+    }
+  }
+}
