@@ -1,0 +1,81 @@
+x-contract:
+  provides:
+    - id
+    - title
+    - content
+    - created_at
+    - updated_at
+  requires: []
+
+database_engine: sqlite
+orm: sqlalchemy
+
+tables:
+  notes:
+    table_name: notes
+    description: Database table for storing user notes.
+    columns:
+      id:
+        type: Integer
+        sqlite_type: INTEGER
+        primary_key: true
+        autoincrement: true
+        nullable: false
+        description: Unique integer primary key identifier.
+      title:
+        type: String(120)
+        sqlite_type: VARCHAR(120)
+        nullable: false
+        constraints:
+          min_length: 1
+          max_length: 120
+        description: Required title of the note, 1 to 120 characters long.
+      content:
+        type: Text
+        sqlite_type: TEXT
+        nullable: true
+        default: null
+        constraints:
+          max_length: 5000
+        description: Optional content of the note, up to 5000 characters.
+      created_at:
+        type: DateTime(timezone=True)
+        sqlite_type: TIMESTAMP / DATETIME
+        nullable: false
+        default: datetime.now(timezone.utc)
+        description: ISO-8601 UTC timestamp when the note record was created.
+      updated_at:
+        type: DateTime(timezone=True)
+        sqlite_type: TIMESTAMP / DATETIME
+        nullable: false
+        default: datetime.now(timezone.utc)
+        onupdate: datetime.now(timezone.utc)
+        description: ISO-8601 UTC timestamp when the note record was last updated.
+
+indexes:
+  - name: ix_notes_id
+    table: notes
+    columns:
+      - id
+    unique: true
+  - name: ix_notes_title
+    table: notes
+    columns:
+      - title
+    unique: false
+
+sqlalchemy_model_definition: |
+  from datetime import datetime, timezone
+  from sqlalchemy import Column, Integer, String, Text, DateTime
+  from sqlalchemy.orm import declarative_base
+
+  Base = declarative_base()
+
+  class Note(Base):
+      __tablename__ = "notes"
+
+      id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+      title = Column(String(120), nullable=False)
+      content = Column(Text, nullable=True)
+      created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+      updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

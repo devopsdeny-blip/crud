@@ -1,0 +1,277 @@
+openapi: 3.0.3
+info:
+  title: Notes API
+  description: REST API for creating, reading, updating, and deleting notes using Python FastAPI and SQLite.
+  version: 1.0.0
+
+x-contract:
+  provides:
+    - id
+    - title
+    - content
+    - created_at
+    - updated_at
+    - q
+  requires: []
+
+paths:
+  /notes:
+    get:
+      summary: List notes
+      description: Retrieve a list of notes ordered newest first (by created_at descending), optionally filtered by title substring (case-insensitive).
+      operationId: list_notes
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: Search query to filter notes by title (case-insensitive substring match).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of notes successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoteResponse'
+
+    post:
+      summary: Create a note
+      description: Create a new note with a title and optional content.
+      operationId: create_note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteCreate'
+      responses:
+        '201':
+          description: Note successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+  /notes/{id}:
+    get:
+      summary: Get note by ID
+      description: Retrieve a single note by its integer ID.
+      operationId: get_note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The integer ID of the note to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Note successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '404':
+          description: Note not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error in request path parameter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+    put:
+      summary: Update note
+      description: Replace title and content of an existing note.
+      operationId: update_note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The integer ID of the note to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteUpdate'
+      responses:
+        '200':
+          description: Note successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteResponse'
+        '404':
+          description: Note not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+    delete:
+      summary: Delete note
+      description: Delete a note by its integer ID.
+      operationId: delete_note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The integer ID of the note to delete.
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Note successfully deleted. No response body.
+        '404':
+          description: Note not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error in request path parameter.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+
+components:
+  schemas:
+    NoteCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Required note title (1-120 chars).
+          example: Shopping List
+        content:
+          type: string
+          nullable: true
+          maxLength: 5000
+          description: Optional note content (max 5000 chars).
+          example: Milk, Eggs, Bread
+      additionalProperties: false
+
+    NoteUpdate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Required note title (1-120 chars).
+          example: Updated Shopping List
+        content:
+          type: string
+          nullable: true
+          maxLength: 5000
+          description: Optional note content (max 5000 chars).
+          example: Milk, Eggs, Bread, Butter
+      additionalProperties: false
+
+    NoteResponse:
+      type: object
+      required:
+        - id
+        - title
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          description: Auto-increment integer primary key ID.
+          example: 1
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: Note title.
+          example: Shopping List
+        content:
+          type: string
+          nullable: true
+          maxLength: 5000
+          description: Note content.
+          example: Milk, Eggs, Bread
+        created_at:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp of creation.
+          example: "2026-03-30T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp of last update.
+          example: "2026-03-30T10:05:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Error detail message.
+          example: Note not found
+
+    ValidationErrorDetail:
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+          description: Location of error in request (e.g. ['body', 'title']).
+          example:
+            - body
+            - title
+        msg:
+          type: string
+          description: Human-readable validation error message.
+          example: String should have at most 120 characters
+        type:
+          type: string
+          description: Machine-readable error type identifier.
+          example: string_too_long
+
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationErrorDetail'
