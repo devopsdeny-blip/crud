@@ -3,7 +3,7 @@ passed: true
 server_started: true
 entrypoint: src.main:app (asgi), ui_mode: served_by_app, ui_path: /
 summary: smoke passed: UI loaded (Notes App), 2 API check(s) ok
-duration_ms: 6083
+duration_ms: 4711
 ---
 ## Problems
 - none
